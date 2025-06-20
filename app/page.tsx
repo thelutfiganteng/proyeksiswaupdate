@@ -99,7 +99,7 @@ export default function Home() {
             >
               <div className="relative">
                 <VideoPlayer
-                  videoUrl="https://www.youtube.com/embed/dQw4w9WgXcQ"
+                  videoUrl="https://www.youtube.com/embed/Iqr3XIhSnUQ"
                   thumbnailUrl="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=800&h=600&fit=crop"
                   title="Pengenalan ProyekSiswa.id"
                 />
