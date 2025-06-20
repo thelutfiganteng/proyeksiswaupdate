@@ -69,7 +69,7 @@ export default function ProjectDetailPage({ params }: { params: { id: string } }
 
             <div className="mb-6">
               <VideoPlayer
-                videoUrl={project.video || "https://www.youtube.com/embed/dQw4w9WgXcQ"}
+                videoUrl={project.video || "https://www.youtube.com/embed/Iqr3XIhSnUQ"}
                 thumbnailUrl={project.image}
                 title={project.title}
               />

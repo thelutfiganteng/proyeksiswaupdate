@@ -12,7 +12,7 @@ export const featuredProjects = [
     targetFunding: 10000000,
     daysLeft: 15,
     backers: 42,
-    video: "https://www.youtube.com/embed/dQw4w9WgXcQ",
+    video: "https://www.youtube.com/embed/Iqr3XIhSnUQ",
     gallery: [
       "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=400&h=300&fit=crop",
       "https://images.unsplash.com/photo-1572635196237-14b3f281503f?w=400&h=300&fit=crop",
@@ -38,7 +38,7 @@ export const featuredProjects = [
     targetFunding: 15000000,
     daysLeft: 7,
     backers: 78,
-    video: "https://www.youtube.com/embed/dQw4w9WgXcQ",
+    video: "https://www.youtube.com/embed/Iqr3XIhSnUQ",
     gallery: [
       "https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=400&h=300&fit=crop",
       "https://images.unsplash.com/photo-1490645935967-10de6ba17061?w=400&h=300&fit=crop",
@@ -64,7 +64,7 @@ export const featuredProjects = [
     targetFunding: 20000000,
     daysLeft: 30,
     backers: 25,
-    video: "https://www.youtube.com/embed/dQw4w9WgXcQ",
+    video: "https://www.youtube.com/embed/Iqr3XIhSnUQ",
     gallery: [
       "https://images.unsplash.com/photo-1416879595882-3373a0480b5b?w=400&h=300&fit=crop",
       "https://images.unsplash.com/photo-1585320806297-9794b3e4eeae?w=400&h=300&fit=crop",
@@ -90,7 +90,7 @@ export const featuredProjects = [
     targetFunding: 25000000,
     daysLeft: 20,
     backers: 65,
-    video: "https://www.youtube.com/embed/dQw4w9WgXcQ",
+    video: "https://www.youtube.com/embed/Iqr3XIhSnUQ",
     gallery: [
       "https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=400&h=300&fit=crop",
       "https://images.unsplash.com/photo-1518709268805-4e9042af2176?w=400&h=300&fit=crop",
@@ -116,7 +116,7 @@ export const featuredProjects = [
     targetFunding: 30000000,
     daysLeft: 25,
     backers: 92,
-    video: "https://www.youtube.com/embed/dQw4w9WgXcQ",
+    video: "https://www.youtube.com/embed/Iqr3XIhSnUQ",
     gallery: [
       "https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=400&h=300&fit=crop",
       "https://images.unsplash.com/photo-1472851294608-062f824d29cc?w=400&h=300&fit=crop",
@@ -142,7 +142,7 @@ export const featuredProjects = [
     targetFunding: 12000000,
     daysLeft: 10,
     backers: 37,
-    video: "https://www.youtube.com/embed/dQw4w9WgXcQ",
+    video: "https://www.youtube.com/embed/Iqr3XIhSnUQ",
     gallery: [
       "https://images.unsplash.com/photo-1532996122724-e3c354a0b15b?w=400&h=300&fit=crop",
       "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&h=300&fit=crop",

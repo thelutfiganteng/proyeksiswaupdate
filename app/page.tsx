@@ -321,17 +321,17 @@ export default function Home() {
               {
                 title: "Perjalanan GreenTech Solutions",
                 thumbnail: "https://images.unsplash.com/photo-1509391366360-2e959784a276?w=600&h=400&fit=crop",
-                videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ",
+                videoUrl: "https://www.youtube.com/embed/Iqr3XIhSnUQ",
               },
               {
                 title: "EduApp Indonesia Story",
                 thumbnail: "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=600&h=400&fit=crop",
-                videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ",
+                videoUrl: "https://www.youtube.com/embed/Iqr3XIhSnUQ",
               },
               {
                 title: "FoodTech Nusantara Journey",
                 thumbnail: "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=600&h=400&fit=crop",
-                videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ",
+                videoUrl: "https://www.youtube.com/embed/Iqr3XIhSnUQ",
               },
             ].map((video, index) => (
               <motion.div
