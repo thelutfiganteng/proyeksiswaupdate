@@ -155,7 +155,55 @@ export default function TermsPage() {
                   </div>
                 </div>
               </div>
-              <Separator />
+              <Separator/>
+              <div>
+                <h4 className="font-semibold text-gray-900 mb-3">Ketentuan Pengajuan Projek:</h4>
+                <div className="space-y-2">
+                  <div className="flex items-start">
+                    <div className="w-2 h-2 bg-orange-600 rounded-full mt-2 mr-3 flex-shrink-0"></div>
+                    <p className="text-gray-600">Berstatus sebagai mahasiswa atau pelajar aktif atau alumni perguruan tinggi di Indonesia</p>
+                  </div>
+                  <div className="flex items-start">
+                    <div className="w-2 h-2 bg-orange-600 rounded-full mt-2 mr-3 flex-shrink-0"></div>
+                    <p className="text-gray-600">Memiliki KTP dan kartu pelajar/mahasiswa yang masih berlaku, untuk yang dibawah 17 tahun diwajibkan untuk memiliki surat persetujuan orang tua dan penanggungjawab akademisi</p>
+                  </div>
+                  <div className="flex items-start">
+                    <div className="w-2 h-2 bg-orange-600 rounded-full mt-2 mr-3 flex-shrink-0"></div>
+                    <p className="text-gray-600">memiliki surat rekomendasi dari pembimbing atau institusi (opsional, tapi disarankan)</p>
+                  </div>
+                  <div className="flex items-start">
+                    <div className="w-2 h-2 bg-orange-600 rounded-full mt-2 mr-3 flex-shrink-0"></div>
+                    <p className="text-gray-600">
+                    Proyek yang relevan dengan Tujuan Pembangunan Berkelanjutan (SDGs) atau isu sosial, lingkungan, dan teknologi
+                    </p>
+                  </div>
+                  <div className="flex items-start">
+                    <div className="w-2 h-2 bg-orange-600 rounded-full mt-2 mr-3 flex-shrink-0"></div>
+                    <p className="text-gray-600">
+                    Melampirkan berbagai dokumen persyaratan yang dibutuhkan
+                    </p>
+                  </div>
+                  <div className="flex items-start">
+                    <div className="w-2 h-2 bg-orange-600 rounded-full mt-2 mr-3 flex-shrink-0"></div>
+                    <p className="text-gray-600">
+                    Proyek belum menerima pendanaan komersial lain (kecuali hibah atau beasiswa) atau tidak tumpang tindih dengan platform crowdfunding lain tanpa persetujuan
+                    </p>
+                  </div>
+                  <div className="flex items-start">
+                    <div className="w-2 h-2 bg-orange-600 rounded-full mt-2 mr-3 flex-shrink-0"></div>
+                    <p className="text-gray-600">
+                    Proyek harus memberikan laporan perkembangan rutin setiap bulan
+                    </p>
+                  </div>
+                  <div className="flex items-start">
+                    <div className="w-2 h-2 bg-orange-600 rounded-full mt-2 mr-3 flex-shrink-0"></div>
+                    <p className="text-gray-600">
+                    Penggunaan dana harus sesuai dengan RAB, dan penyimpangan dapat dikenakan sanksi
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <Separator/>
               <div>
                 <h4 className="font-semibold text-gray-900 mb-3">Ketentuan Pendanaan:</h4>
                 <div className="space-y-2">
