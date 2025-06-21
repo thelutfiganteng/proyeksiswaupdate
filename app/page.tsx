@@ -313,7 +313,7 @@ export default function Home() {
           >
             <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-4 sm:mb-6">Video Kisah Sukses</h2>
             <p className="text-gray-600 text-lg sm:text-xl max-w-3xl mx-auto leading-relaxed">
-              Saksikan perjalanan inspiratif para alumni ProyekSiswa.id yang telah berhasil membangun bisnis mereka
+              Saksikan perjalanan inspiratif para alumni ProyekSiswa.id yang telah berhasil membangun dari riset dan penelitian mereka
             </p>
           </motion.div>
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 lg:gap-8">
@@ -360,7 +360,7 @@ export default function Home() {
             className="text-center"
           >
             <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-4 sm:mb-6">
-              Siap Memulai Perjalanan Wirausahamu?
+              Siap Memulai Perjalanan Penelitianmu?
             </h2>
             <p className="text-xl sm:text-2xl mb-8 sm:mb-12 max-w-3xl mx-auto text-blue-100 leading-relaxed">
               Bergabunglah dengan ribuan pelajar dan mahasiswa yang telah mewujudkan ide penelitiannya melalui
