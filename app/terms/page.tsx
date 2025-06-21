@@ -208,15 +208,15 @@ export default function TermsPage() {
                 <h4 className="font-semibold text-gray-900 mb-3">Ketentuan Pendanaan:</h4>
                 <div className="space-y-2">
                   <div className="flex items-start">
-                    <div className="w-2 h-2 bg-orange-600 rounded-full mt-2 mr-3 flex-shrink-0"></div>
+                    <div className="w-2 h-2 bg-blue-800 rounded-full mt-2 mr-3 flex-shrink-0"></div>
                     <p className="text-gray-600">Platform mengenakan biaya layanan 5% dari total dana terkumpul</p>
                   </div>
                   <div className="flex items-start">
-                    <div className="w-2 h-2 bg-orange-600 rounded-full mt-2 mr-3 flex-shrink-0"></div>
+                    <div className="w-2 h-2 bg-blue-800 rounded-full mt-2 mr-3 flex-shrink-0"></div>
                     <p className="text-gray-600">Dana akan dicairkan setelah target minimum tercapai</p>
                   </div>
                   <div className="flex items-start">
-                    <div className="w-2 h-2 bg-orange-600 rounded-full mt-2 mr-3 flex-shrink-0"></div>
+                    <div className="w-2 h-2 bg-blue-800 rounded-full mt-2 mr-3 flex-shrink-0"></div>
                     <p className="text-gray-600">
                       Pengembalian dana otomatis jika target tidak tercapai dalam batas waktu
                     </p>
