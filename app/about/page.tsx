@@ -359,7 +359,7 @@ export default function AboutPage() {
                 </div>
                 <h3 className="text-xl font-semibold mb-2">Telepon</h3>
                 <p className="text-gray-600">+62 898 3064 613</p>
-                <p className="text-gray-600">+62 813 6924 2331</p>
+                {/* <p className="text-gray-600">+62 813 6924 2331</p> */}
               </div>
             </MotionCard>
 
