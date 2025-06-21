@@ -114,7 +114,7 @@ export default function AboutPage() {
               <h2 className="text-3xl font-bold mb-6">Cerita Kami</h2>
               <div className="space-y-4 text-gray-700">
                 <p>
-                  <b>ProyekSiswa.id</b> berawal dari keprihatinan kami terhadap banyaknya ide bisnis inovatif dan ide penelitian dari pelajar dan
+                  <b>ProyekSiswa.id</b> berawal dari keprihatinan kami terhadap banyaknya ide riset inovatif dan ide penelitian dari pelajar dan
                   mahasiswa yang tidak bisa terealisasi karena keterbatasan dana dan dukungan.
                 </p>
                 <p>
