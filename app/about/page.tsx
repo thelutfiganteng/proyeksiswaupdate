@@ -11,18 +11,23 @@ import { CheckCircle2, Heart, Mail, MapPin, Phone } from "lucide-react"
 export default function AboutPage() {
   const teamMembers = [
     {
-      name: "Mutiara Syafitri",
+      name: "Muhammad Lutfi Kurniawan",
       role: "Co-Founder & CEO",
+      image: "/images/team/lutfi.png",
+      
+    },
+    {
+      name: "Bima Saputra",
+      role: "Co-Founder & COO",
       image: "/images/team/mutiara.jpeg",
       
     },
     {
-      name: "Muhammad Lutfi Kurniawan",
-      role: "Co-Founder & COO",
-      image: "/images/team/lutfi.png",
+      name: "Mutiara Syafitri",
+      role: "Co-Founder & CFO",
+      image: "/images/team/mutiara.jpeg",
       
     },
-    
   ]
 
   const partners = [
