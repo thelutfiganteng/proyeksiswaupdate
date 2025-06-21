@@ -108,7 +108,7 @@ export default function TermsPage() {
                 <div className="flex items-start">
                   <div className="w-2 h-2 bg-blue-600 rounded-full mt-2 mr-3 flex-shrink-0"></div>
                   <p className="text-gray-600">
-                    Pengguna harus berusia minimal 14 tahun atau memiliki persetujuan orang tua/wali dan memiliki KTP atau KIA.
+                    Pengguna harus berusia minimal 14 tahun.
                   </p>
                 </div>
                 <div className="flex items-start">
