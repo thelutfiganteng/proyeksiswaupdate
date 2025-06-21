@@ -98,9 +98,12 @@ export default function RegisterPage() {
                         <SelectItem value="smp">SMP</SelectItem>
                         <SelectItem value="sma">SMA</SelectItem>
                         <SelectItem value="smk">SMK</SelectItem>
+                        <SelectItem value="d3">D1</SelectItem>
+                        <SelectItem value="d3">D2</SelectItem>
                         <SelectItem value="d3">D3</SelectItem>
                         <SelectItem value="s1">S1</SelectItem>
                         <SelectItem value="s2">S2</SelectItem>
+                        <SelectItem value="s2">S3</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
