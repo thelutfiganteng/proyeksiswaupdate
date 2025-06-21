@@ -246,7 +246,7 @@ export default function AboutPage() {
           >
             <h2 className="text-3xl font-bold mb-4">Tim Kami</h2>
             <p className="text-gray-600 max-w-2xl mx-auto">
-              Kenali orang-orang di balik ProyekSiswa.id yang berdedikasi untuk mendukung Riseter dan Peneliti muda Indonesia
+              Kenali orang-orang di balik ProyekSiswa.id yang berdedikasi untuk mendukung Peneliti muda Indonesia
             </p>
           </motion.div>
 
