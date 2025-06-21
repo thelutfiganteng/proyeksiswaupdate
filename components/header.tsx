@@ -39,6 +39,7 @@ export default function Header() {
 
   // Update navItems - menggabungkan Incubator dan Komunitas menjadi satu
   const navItems = [
+    { name: "Beranda", href: "/" },
     { name: "Jelajahi Proyek", href: "/projects" },
     { name: "Portfolio", href: "/portfolio" },
     { name: "Incubator", href: "/incubator" },
