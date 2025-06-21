@@ -213,10 +213,10 @@ export default function TermsPage() {
                     Konfirmasi pembayaran akan dikirim melalui email dan notifikasi platform
                   </p>
                 </div>
-                <div className="flex items-start">
+                {/* <div className="flex items-start">
                   <div className="w-2 h-2 bg-blue-600 rounded-full mt-2 mr-3 flex-shrink-0"></div>
                   <p className="text-gray-600">Refund akan diproses dalam 7-14 hari kerja sesuai kebijakan bank</p>
-                </div>
+                </div> */}
               </div>
             </CardContent>
           </Card>
