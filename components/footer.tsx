@@ -37,10 +37,10 @@ export default function Footer() {
             {/* Social Media */}
             <div className="flex space-x-4">
               {[
-                { icon: Facebook, href: "#", label: "Facebook" },
-                { icon: Instagram, href: "#", label: "Instagram" },
-                { icon: Twitter, href: "#", label: "Twitter" },
-                { icon: Youtube, href: "#", label: "YouTube" },
+                // { icon: Facebook, href: "#", label: "Facebook" },
+                { icon: Instagram, href: "https://www.instagram.com/proyeksiswa.id/", label: "Instagram" },
+                // { icon: Twitter, href: "#", label: "Twitter" },
+                { icon: Youtube, href: "https://www.youtube.com/@proyeksiswaid", label: "YouTube" },
               ].map((social) => (
                 <Link
                   key={social.label}
