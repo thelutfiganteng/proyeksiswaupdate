@@ -99,9 +99,9 @@ export default function Home() {
             >
               <div className="relative">
                 <VideoPlayer
-                  videoUrl="https://www.youtube.com/embed/Iqr3XIhSnUQ"
+                  videoUrl="https://www.youtube.com/embed/rTpk36xQStY"
                   thumbnailUrl="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=800&h=600&fit=crop"
-                  title="Pengenalan ProyekSiswa.id"
+                  title="Apa itu ProyekSiswa.id"
                 />
                 {/* Decorative elements */}
                 <div className="absolute -top-4 -right-4 w-24 h-24 bg-yellow-300/20 rounded-full blur-xl"></div>
