@@ -447,7 +447,7 @@ export default function IncubatorPage() {
               <MotionButton size="lg" className="bg-white text-purple-700 hover:bg-gray-100">
                 <Link href="/incubator/dashboard">Dashboard</Link>
               </MotionButton>
-              <MotionButton size="lg" variant="outline" className="border-white text-white hover:bg-white/10">
+              <MotionButton size="lg" variant="outline" className="border-white text-blue-700 hover:bg-white/10">
                 <Link href="/incubator/about">Pelajari Lebih Lanjut</Link>
               </MotionButton>
             </div>
