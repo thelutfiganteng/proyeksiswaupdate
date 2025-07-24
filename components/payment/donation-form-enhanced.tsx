@@ -1,44 +1,76 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { useRouter } from "next/navigation"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Textarea } from "@/components/ui/textarea"
-import { Checkbox } from "@/components/ui/checkbox"
-import { Badge } from "@/components/ui/badge"
-import { Alert, AlertDescription } from "@/components/ui/alert"
-import { Separator } from "@/components/ui/separator"
-import { formatCurrency, calculatePlatformFee, MIDTRANS_CONFIG } from "@/lib/midtrans"
-import { Heart, Gift, User, Mail, Phone, MessageSquare, Loader2, AlertCircle, CheckCircle } from "lucide-react"
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Badge } from "@/components/ui/badge";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Separator } from "@/components/ui/separator";
+import { formatCurrency, calculatePlatformFee } from "@/lib/midtrans";
+import {
+  Heart,
+  Gift,
+  User,
+  Mail,
+  Phone,
+  MessageSquare,
+  Loader2,
+  AlertCircle,
+  CheckCircle,
+  LogIn,
+} from "lucide-react";
 
-interface DonationFormProps {
-  projectId: string
-  projectTitle: string
-  rewards?: Array<{
-    id: string
-    amount: number
-    title: string
-    description: string
-    estimatedDelivery?: string
-    limited?: boolean
-    remaining?: number
-  }>
+import { useAuth } from "@/contexts/auth-context";
+import { sendFundingRequest } from "@/lib/funding-api";
+import { getProjectDetails, ProjectDetails } from "@/lib/project-details-api"; // Import the new API function and ProjectDetails type
+
+interface Reward {
+  id: string;
+  amount: number;
+  title: string;
+  description: string;
+  estimatedDelivery?: string;
+  limited?: boolean;
+  remaining?: number;
+  available?: boolean; // Added for consistency with previous dummy data structure
 }
 
-export default function DonationFormEnhanced({ projectId, projectTitle, rewards = [] }: DonationFormProps) {
-  const router = useRouter()
-  const [currentStep, setCurrentStep] = useState(1)
-  const [isLoading, setIsLoading] = useState(false)
-  const [error, setError] = useState<string | null>(null)
-  const [success, setSuccess] = useState<string | null>(null)
+interface DonationFormProps {
+  projectId: string;
+  projectTitle: string; // This prop will still be used for initial display
+  // The 'rewards' prop will now be internally managed by fetching from the API
+  // rewards?: Array<Reward>; // Removed as rewards will be fetched internally
+  onPaymentSuccess?: (data: any) => void; // Optional callback for payment success
+}
 
-  // Form data
-  const [selectedAmount, setSelectedAmount] = useState<number>(0)
-  const [customAmount, setCustomAmount] = useState<string>("")
-  const [selectedReward, setSelectedReward] = useState<string | null>(null)
+export default function DonationFormEnhanced({
+  projectId,
+  projectTitle,
+  onPaymentSuccess,
+}: DonationFormProps) {
+  const router = useRouter();
+  const { user, isLoading: isAuthLoading } = useAuth();
+  const [currentStep, setCurrentStep] = useState(1);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState<string | null>(null);
+
+  const [projectDetails, setProjectDetails] = useState<ProjectDetails | null>(
+    null
+  );
+  const [isLoadingProjectDetails, setIsLoadingProjectDetails] = useState(true);
+  const [projectDetailsError, setProjectDetailsError] = useState<string | null>(
+    null
+  );
+
+  const [selectedAmount, setSelectedAmount] = useState<number>(0);
+  const [customAmount, setCustomAmount] = useState<string>("");
+  const [selectedRewardId, setSelectedRewardId] = useState<string | null>(null); // Renamed to selectedRewardId for clarity
   const [donorInfo, setDonorInfo] = useState({
     firstName: "",
     lastName: "",
@@ -46,143 +78,240 @@ export default function DonationFormEnhanced({ projectId, projectTitle, rewards 
     phone: "",
     message: "",
     anonymous: false,
-  })
+  });
 
-  // Predefined amounts
-  const predefinedAmounts = [25000, 50000, 100000, 250000, 500000, 1000000]
+  const [isFirstNameDisabled, setIsFirstNameDisabled] = useState(false);
+  const [isLastNameDisabled, setIsLastNameDisabled] = useState(false);
+  const [isEmailDisabled, setIsEmailDisabled] = useState(false);
 
-  // Calculate totals
-  const platformFee = calculatePlatformFee(selectedAmount)
-  const totalAmount = selectedAmount + platformFee
+  const predefinedAmounts = [25000, 50000, 100000, 250000, 500000, 1000000];
 
-  // Load Midtrans Snap script
-  const loadSnapScript = () => {
-    return new Promise((resolve, reject) => {
-      // Remove existing script if any
-      const existingScript = document.getElementById("midtrans-snap")
-      if (existingScript) {
-        existingScript.remove()
+  // Calculate platform fee and total amount based on selectedAmount
+  const platformFee = calculatePlatformFee(selectedAmount);
+  const totalAmount = selectedAmount + platformFee;
+
+  // Effect to fetch project details including rewards
+  useEffect(() => {
+    const fetchDetails = async () => {
+      try {
+        setIsLoadingProjectDetails(true);
+        setProjectDetailsError(null);
+        const details = await getProjectDetails(projectId);
+        setProjectDetails(details);
+      } catch (err: any) {
+        setProjectDetailsError(err.message || "Gagal memuat detail proyek.");
+        console.error("Failed to fetch project details:", err);
+      } finally {
+        setIsLoadingProjectDetails(false);
       }
+    };
 
-      const script = document.createElement("script")
-      script.id = "midtrans-snap"
-      script.src = MIDTRANS_CONFIG.snapUrl
-      script.setAttribute("data-client-key", MIDTRANS_CONFIG.clientKey)
-      script.onload = resolve
-      script.onerror = reject
-      document.head.appendChild(script)
-    })
-  }
+    if (projectId) {
+      fetchDetails();
+    }
+  }, [projectId]); // Re-fetch if projectId changes
 
-  // Handle payment
+  // Effect to update selectedReward if selectedAmount matches a reward
+  useEffect(() => {
+    if (projectDetails?.rewards) {
+      const matchingReward = projectDetails.rewards.find(
+        (reward) => reward.amount === selectedAmount
+      );
+
+      if (matchingReward) {
+        if (selectedRewardId !== matchingReward.id) {
+          setSelectedRewardId(matchingReward.id);
+        }
+      } else {
+        if (selectedRewardId !== null) {
+          setSelectedRewardId(null);
+        }
+      }
+    }
+  }, [selectedAmount, projectDetails?.rewards, selectedRewardId]);
+
+  // Effect to populate donor info from logged-in user
+  useEffect(() => {
+    if (!isAuthLoading && user) {
+      setDonorInfo((prevInfo) => ({
+        ...prevInfo,
+        firstName: user.name?.split(" ")[0] || "",
+        lastName: user.name?.split(" ").slice(1).join(" ") || "",
+        email: user.email || "",
+      }));
+      setIsFirstNameDisabled(!!user.name);
+      setIsLastNameDisabled(!!user.name && user.name.split(" ").length > 1);
+      setIsEmailDisabled(!!user.email);
+    } else if (!isAuthLoading && !user) {
+      setIsFirstNameDisabled(false);
+      setIsLastNameDisabled(false);
+      setIsEmailDisabled(false);
+      setDonorInfo((prevInfo) => ({
+        ...prevInfo,
+        firstName: "",
+        lastName: "",
+        email: "",
+      }));
+    }
+  }, [user, isAuthLoading]);
+
   const handlePayment = async () => {
     try {
-      setIsLoading(true)
-      setError(null)
+      setIsLoading(true);
+      setError(null);
+      setSuccess(null);
 
-      // Load Snap script
-      await loadSnapScript()
+      const payload = {
+        supportPackageId: selectedRewardId, // Use selectedRewardId here
+        projectId: projectId,
+        amount: selectedAmount,
+        isAnonymous: donorInfo.anonymous,
+        firstName: donorInfo.anonymous ? "anonymous" : donorInfo.firstName,
+        lastName: donorInfo.anonymous ? "" : donorInfo.lastName,
+        email: donorInfo.anonymous ? "anonymous@example.com" : donorInfo.email,
+        message: donorInfo.anonymous ? "" : donorInfo.message,
+      };
 
-      // Create payment
-      const response = await fetch("/api/payment/create", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          projectId,
-          amount: selectedAmount,
-          customerDetails: donorInfo,
-          rewardId: selectedReward,
-        }),
-      })
+      const result = await sendFundingRequest(payload);
 
-      const data = await response.json()
-
-      if (!response.ok) {
-        throw new Error(data.error || "Failed to create payment")
+      if (!result.success && !result.data) {
+        throw new Error(result.message || "Gagal mengirim permintaan donasi.");
       }
-
-      if (!data.token) {
-        throw new Error("No payment token received")
+      console.log("Funding request successful:", result);
+      setSuccess("Donasi Anda berhasil! Terima kasih atas dukungan Anda.");
+      onPaymentSuccess?.(result);
+      if (result.data?.redirectUrl) {
+        router.push(result.data.redirectUrl);
+      } else {
+        throw new Error("Redirect URL tidak ditemukan.");
       }
-
-      // Open Snap popup
-      // @ts-ignore
-      window.snap.pay(data.token, {
-        onSuccess: (result: any) => {
-          console.log("Payment success:", result)
-          setSuccess("Pembayaran berhasil! Terima kasih atas donasi Anda.")
-          router.push(`/payment/success?order_id=${data.orderId}`)
-        },
-        onPending: (result: any) => {
-          console.log("Payment pending:", result)
-          router.push(`/payment/pending?order_id=${data.orderId}`)
-        },
-        onError: (result: any) => {
-          console.log("Payment error:", result)
-          setError("Pembayaran gagal. Silakan coba lagi.")
-        },
-        onClose: () => {
-          console.log("Payment popup closed")
-          setError("Pembayaran dibatalkan.")
-        },
-      })
     } catch (error) {
-      console.error("Payment error:", error)
-      setError(error instanceof Error ? error.message : "Terjadi kesalahan saat memproses pembayaran")
+      console.error("Funding request error:", error);
+      setError(
+        error instanceof Error
+          ? error.message
+          : "Terjadi kesalahan saat mengirim donasi. Silakan coba lagi."
+      );
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
 
-  // Handle amount selection
   const handleAmountSelect = (amount: number) => {
-    setSelectedAmount(amount)
-    setCustomAmount("")
-  }
+    setSelectedAmount(amount);
+    setCustomAmount("");
+  };
 
-  // Handle custom amount
   const handleCustomAmountChange = (value: string) => {
-    setCustomAmount(value)
-    const numValue = Number.parseInt(value.replace(/\D/g, ""))
+    const rawValue = value.replace(/\D/g, "");
+    setCustomAmount(rawValue);
+    const numValue = Number.parseInt(rawValue);
     if (!isNaN(numValue)) {
-      setSelectedAmount(numValue)
+      setSelectedAmount(numValue);
+    } else {
+      setSelectedAmount(0);
     }
-  }
+  };
 
-  // Handle reward selection
   const handleRewardSelect = (rewardId: string, amount: number) => {
-    setSelectedReward(rewardId)
-    setSelectedAmount(amount)
-    setCustomAmount("")
-  }
+    setSelectedRewardId(rewardId); // Set the ID of the selected reward
+    setSelectedAmount(amount); // Set the amount based on the reward
+    setCustomAmount(amount.toString()); // Update custom amount input
+  };
 
-  // Handle next step
   const handleAmountNext = () => {
     if (selectedAmount < 10000) {
-      setError("Minimum donasi adalah Rp 10.000")
-      return
+      setError("Minimum donasi adalah Rp 10.000");
+      return;
     }
-    setError(null)
-    setCurrentStep(2)
+    setError(null);
+    setCurrentStep(2);
+  };
+
+  const handleInfoNext = async () => {
+    if (!donorInfo.anonymous && (!donorInfo.firstName || !donorInfo.email)) {
+      setError("Nama dan email wajib diisi jika tidak anonim.");
+      return;
+    }
+
+    if (
+      !donorInfo.anonymous &&
+      donorInfo.email &&
+      !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(donorInfo.email)
+    ) {
+      setError("Format email tidak valid.");
+      return;
+    }
+
+    setError(null);
+    await handlePayment();
+  };
+
+  // --- START NEW LOGIC FOR LOGIN REQUIREMENT ---
+  if (isAuthLoading || isLoadingProjectDetails) {
+    return (
+      <div className="flex justify-center items-center min-h-[400px]">
+        <Loader2 className="h-10 w-10 animate-spin text-blue-500" />
+        <span className="ml-3 text-lg text-gray-600">
+          Memuat data {isLoadingProjectDetails ? "proyek" : "pengguna"}...
+        </span>
+      </div>
+    );
   }
 
-  // Handle info next (trigger payment)
-  const handleInfoNext = async () => {
-    if (!donorInfo.firstName || !donorInfo.email) {
-      setError("Nama dan email wajib diisi")
-      return
-    }
+  if (projectDetailsError) {
+    return (
+      <div className="max-w-md mx-auto p-6 flex flex-col items-center justify-center min-h-[400px]">
+        <Alert className="mb-6 text-center border-red-200 bg-red-50">
+          <AlertCircle className="h-6 w-6 mx-auto text-red-600 mb-2" />
+          <AlertDescription className="text-red-800 text-base font-medium">
+            {projectDetailsError}
+          </AlertDescription>
+          <p className="text-sm text-gray-700 mt-2">
+            Silakan coba muat ulang halaman.
+          </p>
+        </Alert>
+      </div>
+    );
+  }
 
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-    if (!emailRegex.test(donorInfo.email)) {
-      setError("Format email tidak valid")
-      return
-    }
+  if (!user) {
+    return (
+      <div className="max-w-md mx-auto p-6 flex flex-col items-center justify-center min-h-[400px]">
+        <Alert className="mb-6 text-center border-orange-200 bg-orange-50">
+          <AlertCircle className="h-6 w-6 mx-auto text-orange-600 mb-2" />
+          <AlertDescription className="text-orange-800 text-base font-medium">
+            Anda harus login untuk melanjutkan donasi.
+          </AlertDescription>
+          <p className="text-sm text-gray-700 mt-2">
+            Silakan login untuk mengisi data donatur Anda secara otomatis dan
+            mempermudah proses.
+          </p>
+        </Alert>
+        <Button
+          onClick={() => router.push("/login")}
+          className="mt-4 px-6 py-3 text-lg"
+        >
+          <LogIn className="mr-2 h-5 w-5" />
+          Login Sekarang
+        </Button>
+      </div>
+    );
+  }
+  // --- END NEW LOGIC FOR LOGIN REQUIREMENT ---
 
-    setError(null)
-    await handlePayment()
+  // If projectDetails is null after loading, it means project was not found
+  if (!projectDetails) {
+    return (
+      <div className="max-w-md mx-auto p-6 flex flex-col items-center justify-center min-h-[400px]">
+        <Alert className="mb-6 text-center border-red-200 bg-red-50">
+          <AlertCircle className="h-6 w-6 mx-auto text-red-600 mb-2" />
+          <AlertDescription className="text-red-800 text-base font-medium">
+            Proyek tidak ditemukan.
+          </AlertDescription>
+        </Alert>
+      </div>
+    );
   }
 
   return (
@@ -192,15 +321,23 @@ export default function DonationFormEnhanced({ projectId, projectTitle, rewards 
         <div className="flex items-center space-x-4">
           <div
             className={`flex items-center justify-center w-8 h-8 rounded-full ${
-              currentStep >= 1 ? "bg-blue-600 text-white" : "bg-gray-200 text-gray-600"
+              currentStep >= 1
+                ? "bg-blue-600 text-white"
+                : "bg-gray-200 text-gray-600"
             }`}
           >
             1
           </div>
-          <div className={`w-16 h-1 ${currentStep >= 2 ? "bg-blue-600" : "bg-gray-200"}`} />
+          <div
+            className={`w-16 h-1 ${
+              currentStep >= 2 ? "bg-blue-600" : "bg-gray-200"
+            }`}
+          />
           <div
             className={`flex items-center justify-center w-8 h-8 rounded-full ${
-              currentStep >= 2 ? "bg-blue-600 text-white" : "bg-gray-200 text-gray-600"
+              currentStep >= 2
+                ? "bg-blue-600 text-white"
+                : "bg-gray-200 text-gray-600"
             }`}
           >
             2
@@ -210,8 +347,12 @@ export default function DonationFormEnhanced({ projectId, projectTitle, rewards 
 
       {/* Step Labels */}
       <div className="flex justify-between mb-8 text-sm text-gray-600">
-        <span className={currentStep >= 1 ? "text-blue-600 font-medium" : ""}>Pilih Jumlah</span>
-        <span className={currentStep >= 2 ? "text-blue-600 font-medium" : ""}>Data Donatur</span>
+        <span className={currentStep >= 1 ? "text-blue-600 font-medium" : ""}>
+          Pilih Jumlah
+        </span>
+        <span className={currentStep >= 2 ? "text-blue-600 font-medium" : ""}>
+          Data Donatur
+        </span>
       </div>
 
       {/* Error Alert */}
@@ -226,7 +367,9 @@ export default function DonationFormEnhanced({ projectId, projectTitle, rewards 
       {success && (
         <Alert className="mb-6 border-green-200 bg-green-50">
           <CheckCircle className="h-4 w-4 text-green-600" />
-          <AlertDescription className="text-green-800">{success}</AlertDescription>
+          <AlertDescription className="text-green-800">
+            {success}
+          </AlertDescription>
         </Alert>
       )}
 
@@ -242,7 +385,9 @@ export default function DonationFormEnhanced({ projectId, projectTitle, rewards 
           <CardContent className="space-y-6">
             {/* Predefined Amounts */}
             <div>
-              <Label className="text-base font-medium mb-3 block">Jumlah Donasi</Label>
+              <Label className="text-base font-medium mb-3 block">
+                Jumlah Donasi
+              </Label>
               <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
                 {predefinedAmounts.map((amount) => (
                   <Button
@@ -259,7 +404,10 @@ export default function DonationFormEnhanced({ projectId, projectTitle, rewards 
 
             {/* Custom Amount */}
             <div>
-              <Label htmlFor="custom-amount" className="text-base font-medium mb-2 block">
+              <Label
+                htmlFor="custom-amount"
+                className="text-base font-medium mb-2 block"
+              >
                 Atau Masukkan Jumlah Lain
               </Label>
               <Input
@@ -273,34 +421,49 @@ export default function DonationFormEnhanced({ projectId, projectTitle, rewards 
             </div>
 
             {/* Rewards */}
-            {rewards.length > 0 && (
+            {projectDetails.rewards.length > 0 && (
               <div>
                 <Label className="text-base font-medium mb-3 block flex items-center gap-2">
                   <Gift className="h-4 w-4" />
                   Pilih Reward (Opsional)
                 </Label>
                 <div className="space-y-3">
-                  {rewards.map((reward) => (
+                  {projectDetails.rewards.map((reward) => (
                     <div
                       key={reward.id}
-                      className={`border rounded-lg p-4 cursor-pointer transition-colors ${
-                        selectedReward === reward.id
+                      className={`flex items-center space-x-2 p-3 border rounded-md cursor-pointer transition-colors ${
+                        selectedRewardId === reward.id
                           ? "border-blue-500 bg-blue-50"
                           : "border-gray-200 hover:border-gray-300"
+                      } ${
+                        !reward.available ? "opacity-50 cursor-not-allowed" : ""
                       }`}
-                      onClick={() => handleRewardSelect(reward.id, reward.amount)}
+                      onClick={() =>
+                        reward.available &&
+                        handleRewardSelect(reward.id, reward.amount)
+                      }
                     >
-                      <div className="flex justify-between items-start mb-2">
+                      {/* Use RadioGroupItem if you want true radio button behavior */}
+                      {/* For simplicity, I'm keeping the div as clickable, but a RadioGroup would be more semantically correct */}
+                      <div>
                         <h4 className="font-medium">{reward.title}</h4>
-                        <Badge variant="secondary">{formatCurrency(reward.amount)}</Badge>
+                        <p className="text-sm text-gray-600">
+                          {reward.description}
+                        </p>
+                        {reward.estimatedDelivery && (
+                          <p className="text-xs text-gray-500">
+                            Estimasi Pengiriman: {reward.estimatedDelivery}
+                          </p>
+                        )}
+                        {reward.limited && reward.remaining && (
+                          <p className="text-xs text-orange-600 mt-1">
+                            Tersisa {reward.remaining} item
+                          </p>
+                        )}
                       </div>
-                      <p className="text-sm text-gray-600 mb-2">{reward.description}</p>
-                      {reward.estimatedDelivery && (
-                        <p className="text-xs text-gray-500">Estimasi pengiriman: {reward.estimatedDelivery}</p>
-                      )}
-                      {reward.limited && reward.remaining && (
-                        <p className="text-xs text-orange-600 mt-1">Tersisa {reward.remaining} item</p>
-                      )}
+                      <Badge variant="secondary" className="ml-auto">
+                        {formatCurrency(reward.amount)}
+                      </Badge>
                     </div>
                   ))}
                 </div>
@@ -328,7 +491,11 @@ export default function DonationFormEnhanced({ projectId, projectTitle, rewards 
               </div>
             )}
 
-            <Button onClick={handleAmountNext} className="w-full" disabled={selectedAmount < 10000}>
+            <Button
+              onClick={handleAmountNext}
+              className="w-full"
+              disabled={selectedAmount < 10000}
+            >
               Lanjutkan
             </Button>
           </CardContent>
@@ -345,14 +512,30 @@ export default function DonationFormEnhanced({ projectId, projectTitle, rewards 
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
+            {user && (
+              <Alert className="mb-4 border-blue-200 bg-blue-50 text-blue-800">
+                <AlertCircle className="h-4 w-4 text-blue-600" />
+                <AlertDescription>
+                  Anda login sebagai{" "}
+                  <strong>
+                    {user.name} ({user.email})
+                  </strong>
+                  . Data Anda telah diisi otomatis.
+                </AlertDescription>
+              </Alert>
+            )}
+
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <Label htmlFor="firstName">Nama Depan *</Label>
                 <Input
                   id="firstName"
                   value={donorInfo.firstName}
-                  onChange={(e) => setDonorInfo({ ...donorInfo, firstName: e.target.value })}
+                  onChange={(e) =>
+                    setDonorInfo({ ...donorInfo, firstName: e.target.value })
+                  }
                   placeholder="Masukkan nama depan"
+                  disabled={isFirstNameDisabled || donorInfo.anonymous}
                 />
               </div>
               <div>
@@ -360,8 +543,11 @@ export default function DonationFormEnhanced({ projectId, projectTitle, rewards 
                 <Input
                   id="lastName"
                   value={donorInfo.lastName}
-                  onChange={(e) => setDonorInfo({ ...donorInfo, lastName: e.target.value })}
+                  onChange={(e) =>
+                    setDonorInfo({ ...donorInfo, lastName: e.target.value })
+                  }
                   placeholder="Masukkan nama belakang"
+                  disabled={isLastNameDisabled || donorInfo.anonymous}
                 />
               </div>
             </div>
@@ -375,12 +561,16 @@ export default function DonationFormEnhanced({ projectId, projectTitle, rewards 
                 id="email"
                 type="email"
                 value={donorInfo.email}
-                onChange={(e) => setDonorInfo({ ...donorInfo, email: e.target.value })}
+                onChange={(e) =>
+                  setDonorInfo({ ...donorInfo, email: e.target.value })
+                }
                 placeholder="nama@email.com"
+                disabled={isEmailDisabled || donorInfo.anonymous}
               />
             </div>
 
-            <div>
+            {/* If your backend API does not use 'phone', you might remove or comment this out */}
+            {/* <div>
               <Label htmlFor="phone" className="flex items-center gap-2">
                 <Phone className="h-4 w-4" />
                 Nomor Telepon
@@ -389,10 +579,13 @@ export default function DonationFormEnhanced({ projectId, projectTitle, rewards 
                 id="phone"
                 type="tel"
                 value={donorInfo.phone}
-                onChange={(e) => setDonorInfo({ ...donorInfo, phone: e.target.value })}
+                onChange={(e) =>
+                  setDonorInfo({ ...donorInfo, phone: e.target.value })
+                }
                 placeholder="08xxxxxxxxxx"
+                disabled={donorInfo.anonymous}
               />
-            </div>
+            </div> */}
 
             <div>
               <Label htmlFor="message" className="flex items-center gap-2">
@@ -402,9 +595,12 @@ export default function DonationFormEnhanced({ projectId, projectTitle, rewards 
               <Textarea
                 id="message"
                 value={donorInfo.message}
-                onChange={(e) => setDonorInfo({ ...donorInfo, message: e.target.value })}
+                onChange={(e) =>
+                  setDonorInfo({ ...donorInfo, message: e.target.value })
+                }
                 placeholder="Tulis pesan dukungan Anda..."
                 rows={3}
+                disabled={donorInfo.anonymous}
               />
             </div>
 
@@ -412,19 +608,45 @@ export default function DonationFormEnhanced({ projectId, projectTitle, rewards 
               <Checkbox
                 id="anonymous"
                 checked={donorInfo.anonymous}
-                onCheckedChange={(checked) => setDonorInfo({ ...donorInfo, anonymous: checked as boolean })}
+                onCheckedChange={(checked) => {
+                  setDonorInfo((prev) => ({
+                    ...prev,
+                    anonymous: checked as boolean,
+                  }));
+                  if (checked) {
+                    // Clear personal info if anonymous is checked
+                    setDonorInfo((prev) => ({
+                      ...prev,
+                      firstName: "",
+                      lastName: "",
+                      email: "",
+                      phone: "", // Keep phone field in state to clear it
+                      message: "",
+                    }));
+                  } else {
+                    // Restore user info if un-checked and user is logged in
+                    if (user) {
+                      setDonorInfo((prev) => ({
+                        ...prev,
+                        firstName: user.name?.split(" ")[0] || "",
+                        lastName:
+                          user.name?.split(" ").slice(1).join(" ") || "",
+                        email: user.email || "",
+                      }));
+                    }
+                  }
+                }}
               />
               <Label htmlFor="anonymous" className="text-sm">
                 Donasi sebagai anonim
               </Label>
             </div>
 
-            {/* Payment Summary */}
             <div className="bg-blue-50 rounded-lg p-4">
               <h4 className="font-medium mb-2">Ringkasan Pembayaran</h4>
               <div className="space-y-1 text-sm">
                 <div className="flex justify-between">
-                  <span>Donasi untuk: {projectTitle}</span>
+                  <span>Donasi untuk: {projectDetails.title}</span>
                 </div>
                 <div className="flex justify-between">
                   <span>Jumlah donasi</span>
@@ -443,12 +665,20 @@ export default function DonationFormEnhanced({ projectId, projectTitle, rewards 
             </div>
 
             <div className="flex gap-3">
-              <Button variant="outline" onClick={() => setCurrentStep(1)} className="flex-1">
+              <Button
+                variant="outline"
+                onClick={() => setCurrentStep(1)}
+                className="flex-1"
+              >
                 Kembali
               </Button>
               <Button
                 onClick={handleInfoNext}
-                disabled={isLoading || !donorInfo.firstName || !donorInfo.email}
+                disabled={
+                  isLoading ||
+                  (!donorInfo.anonymous &&
+                    (!donorInfo.firstName || !donorInfo.email))
+                }
                 className="flex-1"
               >
                 {isLoading ? (
@@ -462,16 +692,16 @@ export default function DonationFormEnhanced({ projectId, projectTitle, rewards 
               </Button>
             </div>
 
-            {/* Sandbox Notice */}
             <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3">
               <p className="text-sm text-yellow-800">
-                <strong>Mode Sandbox:</strong> Ini adalah lingkungan testing. Gunakan data test yang tersedia di Snap
-                popup untuk simulasi pembayaran.
+                <strong>Mode Sandbox:</strong> Ini adalah lingkungan testing.
+                Perilaku setelah pembayaran mungkin bergantung pada respons dari
+                backend Anda.
               </p>
             </div>
           </CardContent>
         </Card>
       )}
     </div>
-  )
+  );
 }

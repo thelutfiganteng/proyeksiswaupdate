@@ -1,3 +1,6 @@
+import { AuthResponse, ErrorResponse, RegisterResponse } from "@/types/auth"
+import apiClient from "./apiClient"
+
 export interface User {
   id: string
   email: string
@@ -12,6 +15,7 @@ export interface User {
     bio?: string
     verified?: boolean
   }
+  idToken?: string;
 }
 
 export const mockUsers: Record<string, { password: string; user: User }> = {
@@ -65,14 +69,50 @@ export const mockUsers: Record<string, { password: string; user: User }> = {
   },
 }
 
-export const authenticateUser = async (email: string, password: string): Promise<User | null> => {
-  // Simulate API call delay
-  await new Promise((resolve) => setTimeout(resolve, 1000))
-
-  const userRecord = mockUsers[email]
-  if (userRecord && userRecord.password === password) {
-    return userRecord.user
+export const authenticateUser = async (email: string, password: string): Promise<AuthResponse | null> => {
+  const normalizedEmail = email.trim().toLowerCase();
+  try {
+    const response = await apiClient.post<AuthResponse>('/api/auth/login', {
+      email: normalizedEmail,
+      password,
+    });
+    console.log({ data: response.data });
+    return response.data;
+  } catch (error: any) {
+    console.error('An error occurred during authentication:', error.response?.data?.message || error.message);
+    return null;
   }
+};
 
-  return null
-}
+export const registerUser = async (formData: any): Promise<RegisterResponse | ErrorResponse> => {
+  try {
+    const response = await apiClient.post<RegisterResponse>('/api/auth/register', formData);
+    return response.data;
+  } catch (error: any) {
+    console.error('An error occurred during registration:', error.response?.data?.message || error.message, error.response?.data);
+    return error.response?.data as ErrorResponse || { success: false, message: error.message || 'Unknown error occurred during registration.' };
+  }
+};
+
+export const forgotPassword = async (email: string): Promise<{ success: boolean; message: string }> => {
+  try {
+    const response = await apiClient.post<{ success: boolean; message: string }>('/api/auth/forgot-password', { email });
+    return { success: response.data.success, message: response.data.message || "Link reset password telah dikirim ke email Anda." };
+  } catch (error: any) {
+    console.error('An error occurred during forgot password request:', error.response?.data?.message || error.message, error.response?.data);
+    return { success: false, message: error.response?.data?.message || "Terjadi kesalahan jaringan atau server. Silakan coba lagi nanti." };
+  }
+};
+
+export const resetPassword = async (token: string, newPassword: string): Promise<{ success: boolean; message: string }> => {
+  try {
+    const response = await apiClient.post<{ success: boolean; message: string }>('/api/auth/reset-password', {
+      token,
+      newPassword,
+    });
+    return { success: response.data.success, message: response.data.message || "Password berhasil direset." };
+  } catch (error: any) {
+    console.error('An error occurred during password reset:', error.response?.data?.message || error.message, error.response?.data);
+    return { success: false, message: error.response?.data?.message || "Gagal mereset password. Silakan coba lagi." };
+  }
+};
